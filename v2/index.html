@@ -225,6 +225,15 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 .donepanel{text-align:center;padding:28px 18px;background:linear-gradient(135deg,var(--violet),var(--navy2) 60%);border-radius:24px;border:1px solid var(--line);margin-top:16px}
 .donepanel .okmark{width:68px;height:68px;border-radius:50%;background:var(--ok);color:var(--navy);display:grid;place-items:center;font-size:36px;font-weight:900;margin:0 auto 14px}
 .donepanel[hidden],#wiz[hidden]{display:none}
+
+.steps button{flex-direction:column;gap:3px;font-size:11px;min-height:50px}
+.sociocard{background:linear-gradient(135deg,var(--violet),var(--navy2) 70%);border:1.5px solid var(--pink);border-radius:24px;padding:20px}
+.sociocard .perks{margin-top:4px}
+.socioopts{display:grid;gap:10px;margin-top:18px}
+.sopt{min-height:58px;border-radius:16px;border:2px solid var(--pink);background:transparent;color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.sopt.alt{border-color:var(--line);font-weight:700;font-size:15px;color:var(--muted)}
+.sopt.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.sopt.alt.on{background:#ffffff1f;border-color:#fff;color:#fff}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
@@ -304,13 +313,14 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 
 <section id="pedido">
   <span class="kicker">Haz tu pedido</span>
-  <h2>Tu pedido en 3 pasos</h2>
+  <h2>Tu pedido en 4 pasos</h2>
   <div id="wiz">
     <div class="stepsbar">
       <ol class="steps" id="steps">
         <li><button data-go="1"><span class="n">1</span>Equipación</button></li>
         <li><button data-go="2"><span class="n">2</span>Material</button></li>
-        <li><button data-go="3"><span class="n">3</span>Pedido</button></li>
+        <li><button data-go="3"><span class="n">3</span>Socio</button></li>
+        <li><button data-go="4"><span class="n">4</span>Pedido</button></li>
       </ol>
       <div class="pbar"><i id="pfill"></i></div>
     </div>
@@ -342,11 +352,34 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     </div>
 
     <div class="step" data-step="3" hidden>
+      <div class="sociocard">
+        <span class="kicker">Hazte socio</span>
+        <h2 style="margin-top:6px">Club Deportivo ProBikes Morón</h2>
+        <div class="fee" style="margin-top:12px"><span class="price">20 €</span><b>al año</b></div>
+        <p class="sub" style="margin:4px 0 4px;color:#d8dbff">Sin matrícula. Sin permanencia.</p>
+        <div class="socioopts" style="margin:14px 0 18px">
+          <button class="sopt" data-sopt="1" aria-pressed="false">✓ Sí, quiero ser socio · +20 €</button>
+          <button class="sopt alt" data-sopt="0" aria-pressed="false">Ahora no</button>
+        </div>
+        <ul class="perks">
+    <li class="hl"><span class="ic">🏁</span><div><b>Descuentos especiales en carreras Scott</b><span>Los socios del club tienen precio especial de inscripción en estas pruebas:</span><div class="races"><span class="chip">Gran Fondo Alpujarra Magna</span><span class="chip">Open MTB Puerta de la Alpujarra</span><span class="chip">La Purito</span><span class="chip">Mediterranean Epic Mountain Bike</span><span class="chip">Mediterranean Epic Gran Fondo</span><span class="chip">Mediterranean Epic Gravel</span><span class="chip">Utopia Gravel</span><span class="chip">Picota Bike Race</span></div></div></li>
+    <li><span class="ic">🍽️</span><div><b>Una comida al año con el club</b><span>Para disfrutar juntos de la temporada.</span></div></li>
+    <li><span class="ic">💬</span><div><b>Grupo de WhatsApp</b><span>Se organizan las salidas y se avisa de cuándo se hacen.</span></div></li>
+    <li><span class="ic">🌙</span><div><b>Nocturnas ProBikes</b><span>Todas las nocturnas, cada dos jueves durante el verano, con refrigerio gratuito para los asistentes.</span></div></li>
+    <li><span class="ic">⭐</span><div><b>Acceso VIP a las rebajas</b><span>Entras a las ofertas especiales de la tienda antes de que se publiquen.</span></div></li>
+  </ul>
+        
+        <input type="checkbox" id="socio" hidden>
+      </div>
+      <div class="stepnav"><button class="btn ghost" data-prev>← Volver</button><button class="btn" data-next id="socionext">Continuar sin ser socio →</button></div>
+    </div>
+
+    <div class="step" data-step="4" hidden>
       <div class="grid c2" style="align-items:start">
         <div class="card">
           <h3>Resumen</h3>
           <ul class="cart cartlist" id="cart" style="margin-top:12px"></ul>
-          <label class="check"><input type="checkbox" id="socio"><span><b>Quiero ser socio</b><br><small style="color:var(--muted)">20 € al año · sin matrícula ni permanencia</small></span></label>
+          
           <div class="total"><span>Total</span><b id="total">0,00 €</b></div>
           <p class="note" id="totalnote"></p>
           <p class="note" id="kit" style="font-weight:700"></p>
@@ -364,7 +397,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
           <p class="note" id="genmsg"></p>
         </div>
       </div>
-      <div class="stepnav"><button class="btn ghost" data-prev>← Volver al material</button></div>
+      <div class="stepnav"><button class="btn ghost" data-prev>← Volver</button></div>
     </div>
   </div>
 
@@ -686,15 +719,16 @@ function renderCart(){
     else price=`<span class="old">${eur(l.pvp*l.qty)}</span> ${eur(l.price*l.qty)} <small>−${pct(l.pvp,l.price)} %</small>`;
     return `<li><div><b>${l.name}${l.variant?" "+l.variant:""}</b><small>Talla ${l.size} · ×${l.qty}</small></div><div style="text-align:right"><b>${price}</b></div><button class="x" data-i="${i}" aria-label="Quitar">×</button></li>`};
   const empty=t=>`<li style="justify-content:center;color:var(--muted)">${t}</li>`;
-  $("#cart").innerHTML=CART.length?CART.map(li).join(""):empty("Todavía no has añadido nada");
+  const socioLi=$("#socio").checked?`<li><div><b>Cuota de socio anual</b><small>Sin matrícula ni permanencia</small></div><div style="text-align:right"><b>${eur(CFG.cuota)}</b></div><button class="x" data-socio="1" aria-label="Quitar">×</button></li>`:"";
+  $("#cart").innerHTML=(CART.length||socioLi)?CART.map(li).join("")+socioLi:empty("Todavía no has añadido nada");
   $("#cart1").innerHTML=CART.map((l,i)=>l.kind==="ropa"?li(l,i):"").join("")||empty("Aún no has añadido prendas");
-  $$(".cartlist .x").forEach(b=>b.onclick=()=>{const l=CART[+b.dataset.i];if(l&&l.kind==="pack")PICK.items[l.id]=null;CART.splice(+b.dataset.i,1);save();refreshPack();renderCart()});
+  $$(".cartlist .x").forEach(b=>b.onclick=()=>{if(b.dataset.socio){$("#socio").checked=false;$("#socio").dispatchEvent(new Event("change"));return}const l=CART[+b.dataset.i];if(l&&l.kind==="pack")PICK.items[l.id]=null;CART.splice(+b.dataset.i,1);save();refreshPack();renderCart()});
   $("#total").textContent=eur(sum);$("#stotal").textContent=eur(sum);
   $("#totalnote").textContent=pend?`${pend} artículo(s) del pack pendientes de PVP; se sumarán al confirmar.`:(CART.some(l=>l.kind==="pack")?`Descuento del pack aplicado: ${Math.round(d*100)} %${hasAllPack()?"":" (con los 5 artículos sería 35 %)"}.`:"");
   const k=kit(),miss=[!k.maillot&&"un maillot",!k.culote&&"un culote"].filter(Boolean);
   $("#kit1").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Equipación completa: ya puedes continuar.</span>`:`Pedido mínimo: una equipación completa. Te falta añadir ${miss.join(" y ")}.`;
   $("#kit").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Pedido mínimo cumplido: equipación completa.</span>`:`Pedido mínimo: una equipación completa. Te falta añadir ${miss.join(" y ")}. <a href="#pedido" data-gostep="1" style="color:var(--pink)">Elegir prendas →</a>`;
-  $("#gen").disabled=!kitOK();
+  $("#gen").disabled=!kitOK();socioUI();
   const n1=document.querySelector('.step[data-step="1"] [data-next]');if(n1)n1.disabled=!kitOK();
   const nd=nudge(),sn=$("#snudge");sn.textContent=nd.t;sn.className="nudge"+(nd.ok?" ok":"");
   $("#sticky").classList.toggle("show",(CART.length>0||$("#socio").checked)&&$("#done").hidden);
@@ -780,11 +814,11 @@ $("#gen").onclick=async()=>{
 let STEP=1;
 function goStep(n,scroll=true){
   if(n>=2&&!kitOK()){toast("Primero añade un maillot y un culote");n=1}
-  STEP=Math.max(1,Math.min(3,n));
+  STEP=Math.max(1,Math.min(4,n));
   $$(".step").forEach(x=>x.hidden=+x.dataset.step!==STEP);
   $$("#steps li").forEach((li,i)=>{li.firstElementChild.classList.toggle("on",i+1===STEP);li.firstElementChild.classList.toggle("done",i+1<STEP)});
-  $("#pfill").style.width=(STEP/3*100)+"%";
-  $("#snext").style.display=STEP===3?"none":"";
+  $("#pfill").style.width=(STEP/4*100)+"%";
+  $("#snext").style.display=STEP===4?"none":"";
   if(scroll)$("#wiz").scrollIntoView({behavior:"smooth",block:"start"});
 }
 document.addEventListener("click",e=>{
@@ -793,9 +827,16 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-prev]")){goStep(STEP-1);return}
   const a=e.target.closest("[data-gostep]");if(a){e.preventDefault();$("#done").hidden=true;$("#wiz").hidden=false;goStep(+a.dataset.gostep)}
 });
+let SOCIO_ELEGIDO=false;
+function socioUI(){
+  const on=$("#socio").checked;
+  $$(".sopt").forEach(b=>{const yes=b.dataset.sopt==="1",act=yes?on:(!on&&SOCIO_ELEGIDO);b.classList.toggle("on",act);b.setAttribute("aria-pressed",act)});
+  $("#socionext").textContent=on?"Continuar →":"Continuar sin ser socio →";
+}
+$$(".sopt").forEach(b=>b.onclick=()=>{SOCIO_ELEGIDO=true;$("#socio").checked=b.dataset.sopt==="1";$("#socio").dispatchEvent(new Event("change"))});
 $("#snext").onclick=()=>{if(STEP===1&&!kitOK()){toast("Añade primero un maillot y un culote");return}goStep(STEP+1)};
 $("#snudge").onclick=()=>{if(!nudge().ok)goStep(2)};
-$("#again").onclick=()=>{$("#done").hidden=true;$("#wiz").hidden=false;buildPack();renderCart();goStep(1)};
+$("#again").onclick=()=>{SOCIO_ELEGIDO=false;$("#done").hidden=true;$("#wiz").hidden=false;buildPack();renderCart();goStep(1)};
 
 /* ---------- Cabecera: maillot y culote girando + precio de la equipación completa ---------- */
 (function hero(){
