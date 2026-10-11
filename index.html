@@ -97,6 +97,12 @@ nav a:hover,nav a.on{color:#fff;background:var(--card)}
 .thumb img{height:118%;width:auto}
 .thumb.pk{height:170px}.thumb.pk img{height:100%;width:100%;object-fit:contain;mix-blend-mode:multiply}
 .thumb.soon{background:linear-gradient(135deg,#23297a,#0d1038);color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.plabel{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
+.vchips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vchips button{min-height:58px;text-align:left;padding:8px 12px;border-radius:14px;border:1.5px solid var(--line);background:transparent;color:var(--text);font:inherit;font-weight:800;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.vchips button small{font-weight:600;color:var(--muted);font-size:12px}
+.vchips button.on{border-color:var(--pink);background:#e5287a26}
+.vchips button.on small{color:#fff}
 .sizes{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
 .sizes button{min-width:44px;min-height:40px;border-radius:10px;border:1.5px solid var(--line);background:transparent;color:var(--text);font:inherit;font-weight:800;cursor:pointer;padding:0 8px}
 .sizes button.on{background:#fff;color:var(--navy);border-color:#fff}
@@ -510,29 +516,40 @@ function addLine(l){
 function save(){store.set("probikes_cart",CART);store.set("probikes_pick",PICK)}
 
 /* ---------- Pack ---------- */
+const dSize=p=>{const L=sizesOf(p);return L[Math.floor((L.length-1)/2)]};
+const curSize=p=>{const L=sizesOf(p),z=(PICK.sz||{})[p.id];return L.includes(z)?z:dSize(p)};
+const curQty=p=>Math.max(1,Math.min(20,((PICK.qty||{})[p.id])||1));
 function buildPack(){
-  $("#packlist").innerHTML=PACK.map(p=>{
-    const on=!!PICK.items[p.id];
-    const pv=p.variants?`<div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap"><select data-var>${p.variants.map(v=>`<option ${vOf(p)===v.v?"selected":""}>${v.v}</option>`).join("")}</select>`:`<div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">`;
-    return `<div class="card" data-p="${p.id}"><div class="thumb pk"><img data-img alt="${p.name}"></div><div class="opt" role="checkbox" aria-checked="${on}" tabindex="0"><span class="tick">${on?"✓":""}</span><span class="meta"><b>${p.name}</b><small data-pvp></small></span></div>
-      ${pv}<select data-size>${sizesOf(p).map(s=>`<option ${(PICK.items[p.id]||sizesOf(p)[Math.floor((sizesOf(p).length-1)/2)])===s?"selected":""}>${s}</option>`).join("")}</select></div></div>`}).join("")
-    +`<button class="btn" id="addpack">Añadir selección al pedido</button>`;
-  $$("#packlist .card").forEach(card=>{
-    const p=PACK.find(x=>x.id===card.dataset.p),opt=card.querySelector(".opt");
-    const toggle=()=>{PICK.items[p.id]=PICK.items[p.id]?null:card.querySelector("[data-size]").value;save();refreshPack()};
-    opt.onclick=toggle;opt.onkeydown=e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();toggle()}};
-    card.querySelector("[data-size]").onchange=e=>{e.target.dataset.last=e.target.value;if(PICK.items[p.id]){PICK.items[p.id]=e.target.value;save()}};
-    const vs=card.querySelector("[data-var]");if(vs)vs.onchange=e=>{PICK[p.id]=e.target.value;const ss=card.querySelector("[data-size]"),L=sizesOf(p);
-      ss.innerHTML=L.map(x=>`<option>${x}</option>`).join("");ss.value=L.includes(ss.dataset.last)?ss.dataset.last:L[Math.floor((L.length-1)/2)];
-      if(PICK.items[p.id])PICK.items[p.id]=ss.value;save();refreshPack()};
+  PICK.sz=PICK.sz||{};PICK.qty=PICK.qty||{};
+  $("#packlist").innerHTML=PACK.map(p=>`<div class="card" data-p="${p.id}">
+    <div class="thumb pk"><img data-img alt="${p.name}"></div>
+    <div class="opt" role="checkbox" tabindex="0"><span class="tick"></span><span class="meta"><b>${p.name}</b><small data-pvp></small></span></div>
+    ${p.variants?`<div class="plabel">Modelo</div><div class="vchips" data-vars></div>`:""}
+    <div class="plabel">Talla</div><div class="sizes" data-sizes style="margin:0 0 4px"></div>
+    <div class="row" style="margin-top:12px"><span class="plabel" style="margin:0">Cantidad</span>
+      <div class="qty"><button data-q="-1" aria-label="Menos unidades">−</button><output data-qty>1</output><button data-q="1" aria-label="Más unidades">+</button></div></div>
+  </div>`).join("")+`<button class="btn" id="addpack">Añadir selección al pedido</button>`;
+  const list=$("#packlist");
+  const pOf=el=>PACK.find(x=>x.id===el.closest(".card").dataset.p);
+  const toggle=p=>{PICK.items[p.id]=PICK.items[p.id]?null:curSize(p);save();refreshPack()};
+  list.addEventListener("click",e=>{
+    const t=e.target.closest("button,.opt");if(!t||!list.contains(t))return;
+    const p=pOf(t);if(!p)return;
+    if(t.classList.contains("opt")){toggle(p);return}
+    if(t.dataset.v){PICK[p.id]=t.dataset.v;PICK.sz[p.id]=curSize(p);PICK.items[p.id]=curSize(p)}
+    else if(t.dataset.s){PICK.sz[p.id]=t.dataset.s;PICK.items[p.id]=t.dataset.s}
+    else if(t.dataset.q){PICK.qty[p.id]=Math.max(1,Math.min(20,curQty(p)+ +t.dataset.q));PICK.items[p.id]=curSize(p)}
+    else return;
+    save();refreshPack();
   });
+  list.addEventListener("keydown",e=>{const o=e.target.closest(".opt");if(o&&(e.key===" "||e.key==="Enter")){e.preventDefault();toggle(pOf(o))}});
   $("#addpack").onclick=()=>{
     const sel=PACK.filter(p=>PICK.items[p.id]);
     if(!sel.length){toast("Marca al menos un artículo");return}
     sel.forEach(p=>{
-      const variant=vOf(p);
+      const variant=vOf(p),size=curSize(p);
       CART=CART.filter(l=>!(l.kind==="pack"&&l.id===p.id));
-      CART.push({key:["pack",p.id,variant,PICK.items[p.id]].join("|"),kind:"pack",id:p.id,name:p.name,variant,size:PICK.items[p.id],qty:1,pvp:packPvp(p,variant)});
+      CART.push({key:["pack",p.id,variant,size].join("|"),kind:"pack",id:p.id,name:p.name,variant,size,qty:curQty(p),pvp:packPvp(p,variant)});
     });
     save();renderCart();toast(isFull(sel.map(p=>p.id))?"Pack añadido · −35 %":`${sel.length} artículo(s) añadidos · −25 %`);
   };
@@ -540,28 +557,30 @@ function buildPack(){
 }
 function refreshPack(){
   const sel=PACK.filter(p=>PICK.items[p.id]);
-  const full=isFull(sel.map(p=>p.id));
-  const ids=sel.map(p=>p.id),full2=isFull(ids);
+  const ids=sel.map(p=>p.id),full=isFull(ids),d=full?CFG.descCompleto:CFG.descSuelto;
   $("#meter").innerHTML=REQ.map(r=>`<i class="${ids.includes(r)?"on":""}"></i>`).join("");
   $("#r35").classList.toggle("act",full);$("#r25").classList.toggle("act",sel.length>0&&!full);
   $$("#packlist .card").forEach(card=>{
     const p=PACK.find(x=>x.id===card.dataset.p),on=!!PICK.items[p.id];
     const o=card.querySelector(".opt");o.setAttribute("aria-checked",on);o.querySelector(".tick").textContent=on?"✓":"";
-    const im=card.querySelector("[data-img]"),src=imgFor(p);if(src){if(im.getAttribute("src")!==src)im.src=src}else card.querySelector(".thumb").style.display="none";
-    const pvp=packPvp(p,vOf(p)),d=full?CFG.descCompleto:CFG.descSuelto;
+    const im=card.querySelector("[data-img]"),src=imgFor(p);if(src){if(im.getAttribute("src")!==src)im.src=src;card.querySelector(".thumb").style.display=""}else card.querySelector(".thumb").style.display="none";
+    const vc=card.querySelector("[data-vars]");
+    if(vc)vc.innerHTML=p.variants.map(v=>`<button data-v="${v.v}" class="${vOf(p)===v.v?"on":""}" aria-pressed="${vOf(p)===v.v}"><span>${v.v}</span><small>${v.pvp==null?"PVP próx.":eur(v.pvp)}</small></button>`).join("");
+    card.querySelector("[data-sizes]").innerHTML=sizesOf(p).map(z=>`<button data-s="${z}" class="${curSize(p)===z?"on":""}" aria-pressed="${curSize(p)===z}">${z}</button>`).join("");
+    card.querySelector("[data-qty]").textContent=curQty(p);
+    const pvp=packPvp(p,vOf(p));
     card.querySelector("[data-pvp]").innerHTML=pvp==null?`PVP próximamente · −${Math.round(d*100)} %`:`<span class="old">${eur(pvp)}</span><b style="color:#fff">${eur(pvp*(1-d))}</b> · −${Math.round(d*100)} %`;
   });
   const names={casco:"casco",zapas:"zapatillas",guantes:"guantes",gafas:"gafas",calcetines:"calcetines"};
-  const miss=REQ.filter(r=>!sel.some(p=>p.id===r)).map(r=>names[r]);
-  const d=full?CFG.descCompleto:CFG.descSuelto;
-  let pv=0,unk=0;sel.forEach(p=>{const x=packPvp(p,vOf(p));if(x==null)unk++;else pv+=x});
+  const miss=REQ.filter(r=>!ids.includes(r)).map(r=>names[r]);
+  let pv=0,fin=0,unk=0,units=0;sel.forEach(p=>{const x=packPvp(p,vOf(p)),q=curQty(p);units+=q;if(x==null)unk++;else{pv+=x*q;fin+=Math.round(x*(1-d)*100)/100*q}});
   let h="";
   if(!sel.length)h=`<b>Marca los artículos que quieras</b><p class="note">Con casco, zapatillas, guantes, gafas y calcetines, −35 %. Con otra selección, −25 %.</p>`;
   else{
-    h=`<div class="row"><b>Tu selección: ${sel.length} artículo${sel.length>1?"s":""}</b><span class="chip act" style="background:var(--pink);border-color:var(--pink)">−${Math.round(d*100)} %</span></div>`;
+    h=`<div class="row"><b>Tu selección: ${sel.length} artículo${sel.length>1?"s":""} · ${units} unidad${units>1?"es":""}</b><span class="chip act" style="background:var(--pink);border-color:var(--pink)">−${Math.round(d*100)} %</span></div>`;
     h+=full?`<p class="note" style="color:var(--ok)">✓ Tienes los cinco artículos del pack: 35 % de descuento.</p>`:`<p class="note">Para el 35 % te faltan: <b style="color:#fff">${miss.join(", ")}</b>. Ahora aplica el 25 %.</p>`;
     h+=unk?`<p class="note">${unk} artículo(s) con PVP próximamente: el precio final se calculará en cuanto se publique.</p>`:"";
-    if(pv>0)h+=`<div class="total"><span>${unk?"Parcial: ":""}<span class="old">${eur(pv)}</span></span><b>${eur(pv*(1-d))}</b></div><p class="note">Ahorras ${eur(pv*d)}${full?"":" · añade lo que falta y ahorrarás más"}.</p>`;
+    if(pv>0)h+=`<div class="total"><span>${unk?"Parcial: ":""}<span class="old">${eur(pv)}</span></span><b>${eur(fin)}</b></div><p class="note">Ahorras ${eur(pv-fin)}${full?"":" · añade lo que falta y ahorrarás más"}.</p>`;
   }
   $("#packsum").innerHTML=h;
 }
