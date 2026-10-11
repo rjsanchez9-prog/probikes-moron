@@ -335,7 +335,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 
 </main>
 
-<footer class="wrap"><img class="footlogo" data-logo alt="ProBikes Morón"><br>Club Deportivo ProBikes Morón · Campaña hasta el 31 de octubre · Sin mínimo de unidades</footer>
+<footer class="wrap"><img class="footlogo" data-logo alt="ProBikes Morón"><br>Club Deportivo ProBikes Morón · Campaña hasta el 31 de octubre · Pedido mínimo: una equipación completa (maillot + culote)</footer>
 
 <div class="sticky" id="sticky"><div class="t">Tu pedido<b id="stotal">0,00 €</b></div><a class="btn" href="#pedido">Ver pedido</a></div>
 <div class="toast" id="toast" role="status"></div>
@@ -391,7 +391,7 @@ function tick(){
   if(left<=0){c.innerHTML="";$("#deadline").textContent="La campaña ha finalizado.";return}
   const d=Math.floor(left/864e5),h=Math.floor(left/36e5)%24,m=Math.floor(left/6e4)%60,s=Math.floor(left/1e3)%60;
   c.innerHTML=[[d,"días"],[h,"horas"],[m,"min"],[s,"seg"]].map(x=>`<div><b>${String(x[0]).padStart(2,"0")}</b><small>${x[1]}</small></div>`).join("");
-  $("#deadline").textContent="La campaña termina el 31 de octubre. Sin cantidades mínimas.";
+  $("#deadline").textContent="La campaña termina el 31 de octubre. Pedido mínimo: una equipación completa (maillot + culote).";
 }
 tick();setInterval(tick,1000);
 
