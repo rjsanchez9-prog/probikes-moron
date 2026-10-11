@@ -235,7 +235,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 <section id="precios">
   <span class="kicker">Precio especial</span>
   <h2>Equipación ProBikes Morón</h2>
-  <p class="sub">Elige prenda, talla y cantidad. Se añade a tu pedido.</p>
+  <p class="sub">Precio especial de campaña frente al PVP. Elige prenda, talla y cantidad.</p>
   <div class="grid c2" id="clothes"></div>
 </section>
 
@@ -350,13 +350,13 @@ const CFG = {
   descCompleto: 0.35,
   descSuelto: 0.25
 };
-/* Precios de la equipación (precio especial de campaña). design = visor 3D disponible */
+/* Equipación: pvp = precio de venta al público, price = precio especial de campaña. design = visor 3D disponible */
 const CLOTHES = [
-  {id:"maillot-cx",  name:"Maillot CX Pro manga corta", price:49.90, design:"maillot"},
-  {id:"culote-abs",  name:"Culote Absolute",            price:82,    design:"culote"},
-  {id:"maillot-ml",  name:"Maillot manga larga",        price:65,    design:null},
-  {id:"chaleco",     name:"Chaleco cortavientos",       price:53,    design:null},
-  {id:"culote-sol",  name:"Culote Absolute Solid",      price:87,    design:"culote"}
+  {id:"maillot-cx",  name:"Maillot CX Pro manga corta", price:49.90, pvp:85,  design:"maillot"},
+  {id:"culote-abs",  name:"Culote Absolute",            price:82,    pvp:125, design:"culote"},
+  {id:"maillot-ml",  name:"Maillot manga larga",        price:65,    pvp:100, design:null},
+  {id:"chaleco",     name:"Chaleco cortavientos",       price:53,    pvp:80,  design:null},
+  {id:"culote-sol",  name:"Culote Absolute Solid",      price:87,    pvp:130, design:"culote"}
 ];
 const SIZES = ["XS","S","M","L","XL","2XL","3XL"];
 /* Pack: pvp = null hasta tener el PVP real (se muestra «PVP próximamente»). */
@@ -465,7 +465,8 @@ $$(".tabs button").forEach(b=>b.onclick=()=>pick(b.dataset.g));
 pick("maillot");
 
 /* ---------- Estado del pedido ---------- */
-let CART=store.get("probikes_cart",[]);
+let CART=store.get("probikes_cart",[]).map(l=>{if(l.kind!=="ropa")return l;const c=CLOTHES.find(x=>x.id===l.id);return c?{...l,pvp:c.pvp,price:c.price}:l}).filter(l=>l.kind!=="ropa"||l.price!=null);
+const pct=(pvp,p)=>Math.round((1-p/pvp)*100);
 let PICK=store.get("probikes_pick",{items:{},zapas:"MTB RC",guantes:"Carretera"});
 const packIds=PACK.map(p=>p.id);
 const vOf=p=>p.variants?(PICK[p.id]||p.variants[0].v):"";
@@ -485,7 +486,7 @@ function buildClothes(){
     const th=c.design?`<div class="thumb"><img src="${FRAMES[c.design][0]}" alt="${c.name}"></div>`:`<div class="thumb soon">Render próximamente</div>`;
     return `<div class="card" data-id="${c.id}">${th}
       <h3>${c.name}</h3>
-      <div class="row" style="margin-top:8px"><div class="price">${eur(c.price)}</div>${c.design?`<button class="chip" data-view="${c.design}" style="cursor:pointer;color:#fff">Ver en 3D</button>`:""}</div>
+      <div class="row" style="margin-top:8px"><div><span class="old">${eur(c.pvp)}</span><span class="chip" style="background:var(--pink);border-color:var(--pink)">−${pct(c.pvp,c.price)} %</span><div class="price">${eur(c.price)}</div><small style="color:var(--ok);font-weight:700">Ahorras ${eur(c.pvp-c.price)}</small></div>${c.design?`<button class="chip" data-view="${c.design}" style="cursor:pointer;color:#fff">Ver en 3D</button>`:""}</div>
       <div class="sizes">${SIZES.map(s=>`<button data-s="${s}" class="${s==="M"?"on":""}">${s}</button>`).join("")}</div>
       <div class="row"><div class="qty"><button data-q="-1" aria-label="Menos">−</button><output>1</output><button data-q="1" aria-label="Más">+</button></div>
       <button class="btn" data-add>Añadir</button></div></div>`}).join("");
@@ -493,7 +494,7 @@ function buildClothes(){
     const id=card.dataset.id,c=CLOTHES.find(x=>x.id===id);
     card.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{chosen[id].size=b.dataset.s;card.querySelectorAll("[data-s]").forEach(x=>x.classList.toggle("on",x===b))});
     card.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{chosen[id].qty=Math.max(1,Math.min(20,chosen[id].qty+ +b.dataset.q));card.querySelector("output").textContent=chosen[id].qty});
-    card.querySelector("[data-add]").onclick=()=>{addLine({kind:"ropa",id,name:c.name,variant:"",size:chosen[id].size,qty:chosen[id].qty,pvp:c.price});toast(`${c.name} (${chosen[id].size}) añadido`)};
+    card.querySelector("[data-add]").onclick=()=>{addLine({kind:"ropa",id,name:c.name,variant:"",size:chosen[id].size,qty:chosen[id].qty,pvp:c.pvp,price:c.price});toast(`${c.name} (${chosen[id].size}) añadido`)};
     const v=card.querySelector("[data-view]");if(v)v.onclick=()=>{pick(c.design);$("#diseno").scrollIntoView()};
   });
 }
@@ -567,7 +568,7 @@ function totals(){
   const d=discNow();let sum=0,pend=0;
   CART.forEach(l=>{
     if(l.kind==="pack"){const pvp=packPvp(PACK.find(p=>p.id===l.id),l.variant);l.pvp=pvp;if(pvp==null){pend++;return}sum+=Math.round(pvp*(1-d)*100)/100*l.qty}
-    else sum+=l.pvp*l.qty;
+    else sum+=l.price*l.qty;
   });
   if($("#socio").checked)sum+=CFG.cuota;
   return {sum,pend,d};
@@ -577,7 +578,7 @@ function renderCart(){
   $("#cart").innerHTML=CART.length?CART.map((l,i)=>{
     let price;
     if(l.kind==="pack")price=l.pvp==null?"PVP pdte.":`${eur(Math.round(l.pvp*(1-d)*100)/100*l.qty)} <small>−${Math.round(d*100)} %</small>`;
-    else price=eur(l.pvp*l.qty);
+    else price=`<span class="old">${eur(l.pvp*l.qty)}</span> ${eur(l.price*l.qty)} <small>−${pct(l.pvp,l.price)} %</small>`;
     return `<li><div><b>${l.name}${l.variant?" "+l.variant:""}</b><small>Talla ${l.size} · ×${l.qty}</small></div><div style="text-align:right"><b>${price}</b></div><button class="x" data-i="${i}" aria-label="Quitar">×</button></li>`}).join(""):`<li style="justify-content:center;color:var(--muted)">Todavía no has añadido nada</li>`;
   $$("#cart .x").forEach(b=>b.onclick=()=>{CART.splice(+b.dataset.i,1);save();renderCart()});
   $("#total").textContent=eur(sum);$("#stotal").textContent=eur(sum);
@@ -617,7 +618,7 @@ const newId=()=>{const n=new Date();return "PBM-"+n.toISOString().slice(2,10).re
 function buildOrder(id){
   const {sum,d}=totals(),socio=$("#socio").checked;
   const [y,m,dd]=$("#nac").value.split("-");
-  const lineas=CART.map(l=>{const pk=l.kind==="pack",desc=pk?d:0,fin=l.pvp==null?"":+(l.pvp*(1-desc)).toFixed(2);
+  const lineas=CART.map(l=>{const pk=l.kind==="pack",desc=pk?d:(l.pvp?1-l.price/l.pvp:0),fin=l.pvp==null?"":(pk?+(l.pvp*(1-desc)).toFixed(2):l.price);
     return {tipo:pk?"pack":"ropa",articulo:l.name,variante:l.variant,talla:l.size,cantidad:l.qty,pvp:l.pvp==null?"":l.pvp,descuento_pct:Math.round(desc*100),precio_unit_final:fin,importe:fin===""?"":+(fin*l.qty).toFixed(2)}});
   if(socio)lineas.push({tipo:"cuota",articulo:"Cuota de socio anual",variante:"",talla:"",cantidad:1,pvp:CFG.cuota,descuento_pct:0,precio_unit_final:CFG.cuota,importe:CFG.cuota});
   return {token:CFG.sheetToken,pedido:id,enviado_cliente:new Date().toISOString(),
