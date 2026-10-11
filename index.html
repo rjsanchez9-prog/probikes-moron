@@ -286,12 +286,19 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <details><summary>¿Puedo federarme?</summary>
       <p>Sí. El club está dado de alta en la Federación Andaluza, así que puedes federarte con el Club Deportivo ProBikes Morón. El pago de la licencia federativa corre a cargo del corredor.</p></details>
   </div>
+  <div class="card" style="margin-top:14px;text-align:center">
+    <h3>¿Otra duda? Escríbenos</h3>
+    <p class="sub" style="margin:6px auto 14px">El WhatsApp del club (617 791 019) es solo para resolver dudas. Los pedidos se hacen únicamente desde esta página.</p>
+    <a class="btn wa" id="wadudas" href="#" target="_blank" rel="noopener">Resolver una duda por WhatsApp</a>
+    <div style="margin:18px 0 12px"><div class="qrbox" id="qr"></div></div>
+    <div><button class="btn ghost" id="qrdl">Descargar QR</button></div>
+  </div>
 </section>
 
 <section id="pedido">
   <span class="kicker">Tu pedido</span>
   <h2>Reserva tus prendas</h2>
-  <p class="sub">Revisa el pedido, rellena tus datos y envíalo. Queda registrado con fecha y hora; si quieres, avisa también por WhatsApp.</p>
+  <p class="sub">Revisa el pedido, rellena tus datos y envíalo. Queda registrado con fecha y hora.</p>
   <div class="grid c2" style="align-items:start">
     <div class="card">
       <h3>Resumen</h3>
@@ -316,18 +323,11 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
       <label class="check" style="min-height:0;margin-top:16px;padding:12px"><input type="checkbox" id="rgpd"><span style="font-size:13px;color:var(--muted)">Acepto que el club guarde estos datos para gestionar mi pedido y mi alta. Responsable: Club Deportivo ProBikes Morón.</span></label>
       <div style="display:grid;gap:10px;margin-top:18px">
         <button class="btn" id="gen">Enviar mi pedido</button>
-        <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener">Avisar por WhatsApp</a>
       </div>
       <p class="note" id="genmsg"></p>
     </div>
   </div>
 
-  <div class="card" style="margin-top:14px;text-align:center">
-    <h3>Escanea y escríbenos</h3>
-    <p class="sub" style="margin:6px auto 14px">Abre WhatsApp con el club (617 791 019).</p>
-    <div class="qrbox" id="qr"></div>
-    <div style="margin-top:14px"><button class="btn ghost" id="qrdl">Descargar QR</button></div>
-  </div>
 </section>
 
 </main>
@@ -586,28 +586,20 @@ function renderCart(){
   $("#sticky").classList.toggle("show",CART.length>0||$("#socio").checked);
   const k=kit(),miss=[!k.maillot&&"un maillot",!k.culote&&"un culote"].filter(Boolean);
   $("#kit").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Pedido mínimo cumplido: equipación completa.</span>`:`Pedido mínimo: una equipación completa. Te falta añadir ${miss.join(" y ")}. <a href="#precios" style="color:var(--pink)">Elegir prendas →</a>`;
-  $("#gen").disabled=!kitOK();$("#wa").classList.toggle("off",!kitOK());$("#wa").setAttribute("aria-disabled",!kitOK());
-  $("#wa").href=waLink();
+  $("#gen").disabled=!kitOK();
 }
 $("#socio").checked=store.get("probikes_socio",false);
 $("#socio").onchange=()=>{store.set("probikes_socio",$("#socio").checked);renderCart()};
-["nombre","tel","mail","dni","nac"].forEach(id=>{$("#"+id).value=store.get("probikes_"+id,"");$("#"+id).oninput=e=>{store.set("probikes_"+id,e.target.value);$("#wa").href=waLink()}});
+["nombre","tel","mail","dni","nac"].forEach(id=>{$("#"+id).value=store.get("probikes_"+id,"");$("#"+id).oninput=e=>{store.set("probikes_"+id,e.target.value)}});
 
-/* ---------- WhatsApp, QR y archivo CRM ---------- */
-function summaryText(){
-  const {sum,d}=totals();
-  const lines=CART.map(l=>`• ${l.name}${l.variant?" "+l.variant:""} · talla ${l.size} · x${l.qty}`);
-  return [`Hola, quiero reservar en la campaña de ${CFG.club}:`,...lines,
-    $("#socio").checked?`• Alta de socio (${CFG.cuota} €/año)`:"",
-    CART.length||$("#socio").checked?`Total estimado: ${eur(sum)}`:"",
-    store.get("probikes_order",{}).sent?`Pedido nº ${store.get("probikes_order",{}).id}`:"",$("#nombre").value?`Nombre: ${$("#nombre").value}`:"",$("#tel").value?`Tel: ${$("#tel").value}`:""].filter(Boolean).join("\n");
-}
+/* ---------- WhatsApp (solo dudas), QR y envío del pedido ---------- */
 const kit=()=>({maillot:CART.some(l=>l.kind==="ropa"&&l.id.startsWith("maillot")),culote:CART.some(l=>l.kind==="ropa"&&l.id.startsWith("culote"))});
 const kitOK=()=>{const k=kit();return k.maillot&&k.culote};
-function waLink(){if(!kitOK())return "#";return `https://wa.me/${CFG.whatsapp}?text=`+encodeURIComponent(CART.length||$("#socio").checked?summaryText():`Hola, me interesa la campaña de ${CFG.club}.`)}
+const waDudas=`https://wa.me/${CFG.whatsapp}?text=`+encodeURIComponent(`Hola, tengo una duda sobre la campaña de ${CFG.club}.`);
+$("#wadudas").href=waDudas;
 (function qr(){
   try{
-    const q=qrcode(0,"M");q.addData(`https://wa.me/${CFG.whatsapp}?text=`+encodeURIComponent(`Hola, me interesa la campaña de ${CFG.club}`));q.make();
+    const q=qrcode(0,"M");q.addData(waDudas);q.make();
     let svg=q.createSvgTag({cellSize:6,margin:0,scalable:true});
     svg=svg.replace(/fill="black"/g,'fill="#0d1038"');$("#qr").innerHTML=svg;
     $("#qrdl").onclick=()=>{const b=new Blob([svg],{type:"image/svg+xml"});dl(b,"qr-whatsapp-probikes-moron.svg")};
@@ -648,7 +640,7 @@ $("#gen").onclick=async()=>{
   if(st.sig===sig&&st.sent){toast("Este pedido ya está enviado");return}
   const id=st.sig===sig?st.id:newId();store.set("probikes_order",{sig,id,sent:false});
   const o=buildOrder(id),btn=$("#gen"),msg=$("#genmsg");
-  if(!CFG.sheetUrl){csvFallback(o);msg.textContent=`Registro de envío no configurado: se ha descargado el archivo ${id}. Envíalo al club por WhatsApp.`;return}
+  if(!CFG.sheetUrl){csvFallback(o);msg.textContent=`Registro de envío no configurado: se ha descargado el archivo ${id}. Contacta con el club para completar el pedido.`;return}
   btn.disabled=true;btn.textContent="Enviando…";msg.textContent="Enviando tu pedido, puede tardar unos segundos…";
   try{
     const ac=new AbortController(),to=setTimeout(()=>ac.abort(),60000);
@@ -656,8 +648,8 @@ $("#gen").onclick=async()=>{
     clearTimeout(to);const j=await r.json();
     if(!j.ok)throw new Error(j.error||"error");
     store.set("probikes_order",{sig,id,sent:true});
-    msg.innerHTML=`<b style="color:var(--ok)">✓ Pedido ${id} registrado${j.fecha?` el ${j.fecha} a las ${j.hora}`:""}.</b><br>Nos pondremos en contacto contigo. Puedes avisarnos también por WhatsApp.`;
-    toast("Pedido enviado ✓");$("#wa").href=waLink();
+    msg.innerHTML=`<b style="color:var(--ok)">✓ Pedido ${id} registrado${j.fecha?` el ${j.fecha} a las ${j.hora}`:""}.</b><br>Nos pondremos en contacto contigo para confirmar tu pedido.`;
+    toast("Pedido enviado ✓");
   }catch(e){
     msg.innerHTML=`No hemos podido confirmar el envío. Revisa tu conexión y vuelve a pulsar «Enviar mi pedido»: si ya había llegado, no se duplicará.`;toast("No se pudo enviar. Inténtalo de nuevo");
   }finally{btn.disabled=!kitOK();btn.textContent="Enviar mi pedido"}
