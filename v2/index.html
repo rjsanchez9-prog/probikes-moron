@@ -252,6 +252,12 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 .subhead{margin:22px 0 10px;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .savenote{color:var(--ok);font-weight:800;font-size:14px;margin:6px 0 0}
 .sticky .btn:disabled{opacity:.55}
+.dscs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.dsc{border:1.5px solid var(--line);border-radius:16px;padding:12px;background:#ffffff0d;display:flex;flex-direction:column;gap:4px;font-size:13px;color:#d8dbff;line-height:1.35}
+.dsc b{color:#fff;font-size:15px}
+.dsc .big2{font-weight:900;font-size:34px;line-height:1;color:var(--pink)}.dsc .big2 small{font-size:.45em;color:#fff}
+.dsc.act{border-color:var(--pink);background:#e5287a26}
+@media(max-width:380px){.dscs{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -331,14 +337,14 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 
     <div class="step" data-step="2" hidden>
       <div class="pack" style="padding:16px">
-        <div class="big">−35<small>%</small></div>
         <h3>Paso 2 · Completa con material <small style="font-weight:600;color:#d8dbff">(opcional)</small></h3>
-        <p style="color:#d8dbff;margin:6px 0 0;font-size:14px">Casco, zapatillas, guantes, gafas y calcetines (los cinco): −35 % sobre el PVP. Con otra selección, −25 % en cada artículo. Es opcional.</p>
-        <div class="meter" id="meter"></div>
-        <div class="rule">
-          <span class="chip" id="r35">Los 5 artículos · 35 %</span>
-          <span class="chip" id="r25">Otra selección · 25 %</span>
+        <p style="color:#d8dbff;margin:6px 0 0;font-size:14.5px">Elige tú lo que quieras: <b style="color:#fff">no viene nada marcado</b>. Cuantos más artículos del pack llevas, más descuento.</p>
+        <div class="dscs">
+          <div class="dsc" id="r35"><div class="big2">−35<small>%</small></div><b>Pack completo</b><span>Si llevas los 5: casco, zapatillas, guantes, gafas y calcetines. El 35 % se aplica a los cinco.</span></div>
+          <div class="dsc" id="r25"><div class="big2">−25<small>%</small></div><b>Artículos sueltos</b><span>Si eliges menos de 5 (los que quieras, incluso uno solo). El 25 % se aplica a cada uno.</span></div>
         </div>
+        <div class="meter" id="meter"></div>
+        <p class="note" style="margin:4px 0 0">Cada barra rosa es uno de los 5 artículos del pack.</p>
       </div>
       <div class="grid" id="packlist" style="margin-top:14px"></div>
       <div class="card" id="packsum" style="margin-top:14px"></div>
@@ -724,7 +730,7 @@ function refreshPack(){
   const miss=REQ.filter(r=>!ids.includes(r)).map(r=>names[r]);
   let pv=0,fin=0,unk=0,units=0;sel.forEach(p=>{const x=packPvp(p,vOf(p)),q=curQty(p);units+=q;if(x==null)unk++;else{pv+=x*q;fin+=Math.round(x*(1-d)*100)/100*q}});
   let h="";
-  if(!sel.length)h=`<b>Marca los artículos que quieras</b><p class="note">Con casco, zapatillas, guantes, gafas y calcetines, −35 %. Con otra selección, −25 %.</p>`;
+  if(!sel.length)h=`<b>Todavía no has elegido ningún artículo</b><p class="note">Toca los que quieras llevarte: los 5 → −35 % en todos · menos de 5 → −25 % en cada uno. Si no quieres material, pulsa «Continuar sin material».</p>`;
   else{
     h=`<div class="row"><b>Tu selección: ${sel.length} artículo${sel.length>1?"s":""} · ${units} unidad${units>1?"es":""}</b><span class="chip act" style="background:var(--pink);border-color:var(--pink)">−${Math.round(d*100)} %</span></div>`;
     h+=full?`<p class="note" style="color:var(--ok)">✓ Tienes los cinco artículos del pack: 35 % de descuento.</p>`:`<p class="note">Para el 35 % te faltan: <b style="color:#fff">${miss.join(", ")}</b>. Ahora aplica el 25 %.</p>`;
@@ -732,6 +738,7 @@ function refreshPack(){
     if(pv>0)h+=`<div class="total"><span>${unk?"Parcial: ":""}<span class="old">${eur(pv)}</span></span><b>${eur(fin)}</b></div><p class="note">Ahorras ${eur(pv-fin)}${full?"":" · añade lo que falta y ahorrarás más"}.</p>`;
   }
   $("#packsum").innerHTML=h;
+  const n2=document.querySelector('.step[data-step="2"] [data-next]');if(n2)n2.textContent=sel.length?"Continuar →":"Continuar sin material →";
 }
 
 /* ---------- Carrito ---------- */
@@ -748,7 +755,7 @@ const stepName={casco:"casco",zapas:"zapatillas",guantes:"guantes",gafas:"gafas"
 function nudge(){
   const ids=CART.filter(l=>l.kind==="pack").map(l=>l.id);
   if(isFull(ids))return {t:"✓ Descuento del 35 % aplicado al material",ok:true};
-  if(!ids.length)return {t:"Añade casco, zapatillas, guantes, gafas y calcetines: −35 %",ok:false};
+  if(!ids.length)return {t:"Material opcional: los 5 → −35 % · sueltos → −25 %",ok:false};
   return {t:`Te faltan ${REQ.filter(r=>!ids.includes(r)).map(r=>stepName[r]).join(", ")} para el −35 %`,ok:false};
 }
 const sendLabel=()=>{const b=$("#gen");if(b&&!b.dataset.busy)b.textContent=`Enviar mi pedido · ${eur(totals().sum)}`};
