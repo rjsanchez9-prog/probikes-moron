@@ -235,6 +235,23 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 .sopt.on{background:var(--pink);border-color:var(--pink);color:#fff}
 .sopt.alt.on{background:#ffffff1f;border-color:#fff;color:#fff}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+/* ---- UX: recorrido guiado ---- */
+.how{list-style:none;margin:18px 0 4px;padding:0;display:grid;gap:8px}
+.how li{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-size:14.5px;line-height:1.3}
+.how li b{display:block;font-size:15px}
+.how .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pink);color:#fff;display:grid;place-items:center;font-weight:900}
+@media(min-width:720px){.how{grid-template-columns:repeat(3,1fr)}}
+.kitcard{border:2px solid var(--pink);background:linear-gradient(135deg,#1b1f63,#12154a)}
+.kitcard .kc-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.kitcard .kc-price{display:flex;align-items:baseline;gap:8px;margin:6px 0 2px}
+.kitcard .kc-price b{font-size:34px;font-weight:900;line-height:1}
+.kitcard .kc-sz{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 12px}
+.kitcard select{width:100%;min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:#0d1038;color:#fff;font:inherit;font-weight:800;padding:0 10px}
+.kitcard .btn{width:100%}
+.kitcard .btn.added{background:var(--ok);border-color:var(--ok)}
+.subhead{margin:22px 0 10px;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.savenote{color:var(--ok);font-weight:800;font-size:14px;margin:6px 0 0}
+.sticky .btn:disabled{opacity:.55}
 </style>
 </head>
 <body>
@@ -242,7 +259,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 <nav>
   <div class="wrap">
     <a href="#top" class="brand" aria-label="ProBikes Morón"><img data-logo alt="ProBikes Morón"></a>
-    <a href="#diseno" class="on">Diseño 3D</a><a href="#pedido">Pedido</a><a href="#club">Club</a><a href="#faq">Dudas</a>
+    <a href="#pedido" class="on">Pedido</a><a href="#diseno">Ver en 3D</a><a href="#club">Club</a><a href="#faq">Dudas</a>
   </div>
 </nav>
 
@@ -261,44 +278,20 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <span class="chip save" id="ksave"></span>
   </div>
   <div class="cta-row">
-    <a class="btn" href="#pedido" data-gostep="1">Hacer mi pedido</a>
-    <a class="btn ghost" href="#diseno">Ver el diseño en 3D</a>
+    <a class="btn" href="#pedido" data-gostep="1">Empezar mi pedido →</a>
+    <a class="btn ghost" href="#diseno">Ver en 3D</a>
   </div>
+  <ol class="how" aria-label="Cómo funciona">
+    <li><span class="n">1</span><div><b>Elige tu equipación</b>Maillot + culote, tu talla</div></li>
+    <li><span class="n">2</span><div><b>Añade material</b>Hasta −35 % en casco, zapatillas…</div></li>
+    <li><span class="n">3</span><div><b>Deja tus datos</b>Y recibes el pedido por email</div></li>
+  </ol>
   <div class="count" id="count" aria-live="polite"></div>
   <p class="note" id="deadline"></p>
 </div></header>
 
 <main class="wrap">
 
-<section id="diseno">
-  <span class="kicker">Visor interactivo</span>
-  <h2>Gira, acerca y mira cada detalle</h2>
-  <p class="sub">Arrastra para girar la prenda, pellizca (o rueda del ratón) para hacer zoom. Doble toque para ampliar.</p>
-  <div class="viewer-wrap">
-    <div class="viewer">
-      <div class="tabs" role="tablist">
-        <button role="tab" aria-selected="true" data-g="maillot">Maillot</button>
-        <button role="tab" aria-selected="false" data-g="culote">Culote</button>
-        <button role="tab" aria-selected="false" data-g="larga">M. larga</button>
-        <button role="tab" aria-selected="false" data-g="chaleco">Chaleco</button>
-      </div>
-      <div class="stage" id="stage" aria-label="Visor 3D de la prenda">
-        <span class="badge" id="vbadge">Frente</span>
-        <img id="vimg" alt="Prenda ProBikes Morón" draggable="false">
-        <div class="hint" id="hint">⟷ arrastra para girar</div>
-      </div>
-      <div class="ctrls">
-        <button id="prev" aria-label="Girar a la izquierda">◀</button>
-        <button id="auto" aria-label="Giro automático">Auto</button>
-        <button id="next" aria-label="Girar a la derecha">▶</button>
-        <button id="zout" aria-label="Alejar">−</button>
-        <button id="zin" aria-label="Acercar">+</button>
-        <button id="rst" aria-label="Restablecer vista">⟲</button>
-      </div>
-      <div class="views" id="views"></div>
-    </div>
-  </div>
-</section>
 
 <section id="pedido">
   <span class="kicker">Haz tu pedido</span>
@@ -315,8 +308,20 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     </div>
 
     <div class="step" data-step="1">
-      <h3>Elige tu equipación</h3>
+      <span class="kicker">Paso 1</span><h3>Elige tu equipación</h3>
       <p class="sub" style="margin:6px 0 14px">Precio especial de campaña frente al PVP. Mínimo obligatorio: maillot de manga corta + culote.</p>
+      <div class="card kitcard" id="kitcard">
+        <div class="kc-top"><div><span class="chip" style="background:var(--pink);border-color:var(--pink)">Lo más fácil</span>
+          <h3 style="margin:8px 0 0">Equipación completa corta</h3>
+          <small style="color:#d8dbff">Maillot CX Pro + Culote Absolute Solid</small></div></div>
+        <div class="kc-price"><span class="old" id="kcpvp"></span><b id="kcprice"></b><span class="chip" id="kcsave" style="background:var(--ok);border-color:var(--ok)"></span></div>
+        <div class="kc-sz">
+          <div><label class="f" for="kcm" style="margin-top:0">Talla maillot</label><select id="kcm"></select></div>
+          <div><label class="f" for="kcc" style="margin-top:0">Talla culote</label><select id="kcc"></select></div>
+        </div>
+        <button class="btn" id="kcadd">Añadir equipación completa</button>
+      </div>
+      <p class="subhead">O elige prenda a prenda</p>
       <div class="grid c2" id="clothes"></div>
       <div class="card" style="margin-top:14px"><h3>Tu equipación</h3>
         <ul class="cart cartlist" id="cart1" style="margin-top:10px"></ul>
@@ -327,7 +332,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <div class="step" data-step="2" hidden>
       <div class="pack" style="padding:16px">
         <div class="big">−35<small>%</small></div>
-        <h3>Completa con material</h3>
+        <h3>Paso 2 · Completa con material <small style="font-weight:600;color:#d8dbff">(opcional)</small></h3>
         <p style="color:#d8dbff;margin:6px 0 0;font-size:14px">Casco, zapatillas, guantes, gafas y calcetines (los cinco): −35 % sobre el PVP. Con otra selección, −25 % en cada artículo. Es opcional.</p>
         <div class="meter" id="meter"></div>
         <div class="rule">
@@ -366,10 +371,11 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <div class="step" data-step="4" hidden>
       <div class="grid c2" style="align-items:start">
         <div class="card">
-          <h3>Resumen</h3>
+          <h3>Revisa tu pedido</h3>
           <ul class="cart cartlist" id="cart" style="margin-top:12px"></ul>
           
           <div class="total"><span>Total</span><b id="total">0,00 €</b></div>
+          <p class="savenote" id="savenote"></p>
           <p class="note" id="totalnote"></p>
           <p class="note" id="kit" style="font-weight:700"></p>
         </div>
@@ -398,6 +404,36 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <div class="total"><span>Total</span><b id="doneTotal"></b></div>
     <p class="note" id="doneNote" style="margin:14px 0 18px"></p>
     <button class="btn ghost" id="again">Hacer otro pedido</button>
+  </div>
+</section>
+
+<section id="diseno">
+  <span class="kicker">Visor interactivo</span>
+  <h2>Gira, acerca y mira cada detalle</h2>
+  <p class="sub">Arrastra para girar la prenda, pellizca (o rueda del ratón) para hacer zoom. Doble toque para ampliar.</p>
+  <div class="viewer-wrap">
+    <div class="viewer">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-g="maillot">Maillot</button>
+        <button role="tab" aria-selected="false" data-g="culote">Culote</button>
+        <button role="tab" aria-selected="false" data-g="larga">M. larga</button>
+        <button role="tab" aria-selected="false" data-g="chaleco">Chaleco</button>
+      </div>
+      <div class="stage" id="stage" aria-label="Visor 3D de la prenda">
+        <span class="badge" id="vbadge">Frente</span>
+        <img id="vimg" alt="Prenda ProBikes Morón" draggable="false">
+        <div class="hint" id="hint">⟷ arrastra para girar</div>
+      </div>
+      <div class="ctrls">
+        <button id="prev" aria-label="Girar a la izquierda">◀</button>
+        <button id="auto" aria-label="Giro automático">Auto</button>
+        <button id="next" aria-label="Girar a la derecha">▶</button>
+        <button id="zout" aria-label="Alejar">−</button>
+        <button id="zin" aria-label="Acercar">+</button>
+        <button id="rst" aria-label="Restablecer vista">⟲</button>
+      </div>
+      <div class="views" id="views"></div>
+    </div>
   </div>
 </section>
 
@@ -591,6 +627,21 @@ const discNow=()=>hasAllPack()?CFG.descCompleto:CFG.descSuelto;
 
 /* ---------- Prendas ---------- */
 const chosen={};
+function buildKitCard(){
+  const m=CLOTHES.find(c=>c.id==="maillot-cx"),c=CLOTHES.find(c=>c.id==="culote-sol");
+  const pvp=m.pvp+c.pvp,pr=m.price+c.price;
+  $("#kcpvp").textContent=eur(pvp);$("#kcprice").textContent=eur(pr);$("#kcsave").textContent=`Ahorras ${eur(pvp-pr)}`;
+  const opts=SIZES.map(z=>`<option${z==="M"?" selected":""}>${z}</option>`).join("");
+  $("#kcm").innerHTML=opts;$("#kcc").innerHTML=opts;
+  $("#kcadd").onclick=()=>{
+    addLine({kind:"ropa",id:m.id,name:m.name,variant:"",size:$("#kcm").value,qty:1,pvp:m.pvp,price:m.price});
+    addLine({kind:"ropa",id:c.id,name:c.name,variant:"",size:$("#kcc").value,qty:1,pvp:c.pvp,price:c.price});
+    toast("Equipación completa añadida ✓");
+    const b=$("#kcadd");b.textContent="✓ Añadida · pulsa «Continuar» abajo";b.classList.add("added");
+    setTimeout(()=>{b.textContent="Añadir otra equipación completa";b.classList.remove("added")},3500);
+    const n=document.querySelector('.step[data-step="1"] [data-next]');if(n)setTimeout(()=>n.scrollIntoView({behavior:"smooth",block:"center"}),350);
+  };
+}
 function buildClothes(){
   $("#clothes").innerHTML=CLOTHES.map(c=>{
     chosen[c.id]={size:"M",qty:1};
@@ -700,6 +751,8 @@ function nudge(){
   if(!ids.length)return {t:"Añade casco, zapatillas, guantes, gafas y calcetines: −35 %",ok:false};
   return {t:`Te faltan ${REQ.filter(r=>!ids.includes(r)).map(r=>stepName[r]).join(", ")} para el −35 %`,ok:false};
 }
+const sendLabel=()=>{const b=$("#gen");if(b&&!b.dataset.busy)b.textContent=`Enviar mi pedido · ${eur(totals().sum)}`};
+let PEDIDO_VIS=false;
 function renderCart(){
   const {sum,pend,d}=totals();
   const li=(l,i)=>{
@@ -717,10 +770,16 @@ function renderCart(){
   const k=kit(),miss=[!k.maillot&&"el maillot de manga corta",!k.culote&&"un culote"].filter(Boolean);
   $("#kit1").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Equipación completa: ya puedes continuar.</span>`:`Pedido mínimo: equipación completa corta. Te falta añadir ${miss.join(" y ")}.`;
   $("#kit").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Pedido mínimo cumplido: equipación completa.</span>`:`Pedido mínimo: equipación completa corta. Te falta añadir ${miss.join(" y ")}. <a href="#pedido" data-gostep="1" style="color:var(--pink)">Elegir prendas →</a>`;
-  $("#gen").disabled=!kitOK();socioUI();
+  let pv=0,pd=0;CART.forEach(l=>{if(l.kind==="ropa"){pv+=l.pvp*l.qty;pd+=l.price*l.qty}else if(l.pvp!=null){pv+=l.pvp*l.qty;pd+=Math.round(l.pvp*(1-d)*100)/100*l.qty}});
+  const sv=Math.round((pv-pd)*100)/100;$("#savenote").textContent=sv>0?`Estás ahorrando ${eur(sv)} frente al PVP 🎉`:"";
+  $("#gen").disabled=!kitOK();sendLabel();socioUI();
   const n1=document.querySelector('.step[data-step="1"] [data-next]');if(n1)n1.disabled=!kitOK();
   const nd=nudge(),sn=$("#snudge");sn.textContent=nd.t;sn.className="nudge"+(nd.ok?" ok":"");
-  $("#sticky").classList.toggle("show",(CART.length>0||$("#socio").checked)&&$("#done").hidden);
+  if(!kitOK()){sn.textContent=`Para continuar añade: ${miss.join(" y ")}`;sn.className="nudge"}
+  else if(STEP>=3){sn.textContent=CART.length+" artículo(s) en tu pedido";sn.className="nudge ok"}
+  const lab={1:"Continuar: material",2:"Continuar: club",3:"Continuar: datos"}[STEP];$("#snext").textContent=lab||"Siguiente";
+  $("#snext").disabled=STEP===1&&!kitOK();
+  $("#sticky").classList.toggle("show",(CART.length>0||$("#socio").checked||PEDIDO_VIS)&&$("#done").hidden);
 }
 $("#socio").checked=store.get("pbk2_socio",false);
 $("#socio").onchange=()=>{store.set("pbk2_socio",$("#socio").checked);renderCart()};
@@ -786,7 +845,7 @@ $("#gen").onclick=async()=>{
   const id=st.sig===sig?st.id:newId();store.set("pbk2_order",{sig,id,sent:false});
   const o=buildOrder(id),btn=$("#gen"),msg=$("#genmsg");
   if(!CFG.sheetUrl){csvFallback(o);msg.textContent=`Registro de envío no configurado: se ha descargado el archivo ${id}. Contacta con el club para completar el pedido.`;return}
-  btn.disabled=true;btn.textContent="Enviando…";msg.textContent="Enviando tu pedido, puede tardar unos segundos…";
+  btn.disabled=true;btn.dataset.busy="1";btn.textContent="Enviando…";msg.textContent="Enviando tu pedido, puede tardar unos segundos…";
   try{
     const ac=new AbortController(),to=setTimeout(()=>ac.abort(),60000);
     const r=await fetch(CFG.sheetUrl,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o),signal:ac.signal});
@@ -796,7 +855,7 @@ $("#gen").onclick=async()=>{
     msg.textContent="";showDone(o,j);toast("Pedido recibido ✓");
   }catch(e){
     msg.innerHTML=`No hemos podido confirmar el envío. Revisa tu conexión y vuelve a pulsar «Enviar mi pedido»: si ya había llegado, no se duplicará.`;toast("No se pudo enviar. Inténtalo de nuevo");
-  }finally{btn.disabled=!kitOK();btn.textContent="Enviar mi pedido"}
+  }finally{btn.disabled=!kitOK();delete btn.dataset.busy;sendLabel()}
 };
 
 /* ---------- Asistente de 3 pasos ---------- */
@@ -807,7 +866,7 @@ function goStep(n,scroll=true){
   $$(".step").forEach(x=>x.hidden=+x.dataset.step!==STEP);
   $$("#steps li").forEach((li,i)=>{li.firstElementChild.classList.toggle("on",i+1===STEP);li.firstElementChild.classList.toggle("done",i+1<STEP)});
   $("#pfill").style.width=(STEP/4*100)+"%";
-  $("#snext").style.display=STEP===4?"none":"";
+  $("#snext").style.display=STEP===4?"none":"";if(typeof renderCart==="function"&&$("#cart"))renderCart();
   if(scroll)$("#wiz").scrollIntoView({behavior:"smooth",block:"start"});
 }
 document.addEventListener("click",e=>{
@@ -824,7 +883,7 @@ function socioUI(){
 }
 $$(".sopt").forEach(b=>b.onclick=()=>{SOCIO_ELEGIDO=true;$("#socio").checked=b.dataset.sopt==="1";$("#socio").dispatchEvent(new Event("change"))});
 $("#snext").onclick=()=>{if(STEP===1&&!kitOK()){toast("Añade primero el maillot de manga corta y un culote");return}goStep(STEP+1)};
-$("#snudge").onclick=()=>{if(!nudge().ok)goStep(2)};
+$("#snudge").onclick=()=>{if(!kitOK()){goStep(1);return}if(STEP<3&&!nudge().ok)goStep(2)};
 $("#again").onclick=()=>{SOCIO_ELEGIDO=false;$("#done").hidden=true;$("#wiz").hidden=false;buildPack();renderCart();goStep(1)};
 
 /* ---------- Cabecera: maillot y culote girando + precio de la equipación completa ---------- */
@@ -841,7 +900,8 @@ $("#again").onclick=()=>{SOCIO_ELEGIDO=false;$("#done").hidden=true;$("#wiz").hi
   $("#kpvp").textContent=eur(pvp);$("#kprice").textContent=eur(pr);$("#ksave").innerHTML=`Ahorras<br>${eur(pvp-pr)}`;
 })();
 
-buildClothes();buildPack();renderCart();goStep(1,false);
+if("IntersectionObserver"in window)new IntersectionObserver(en=>{PEDIDO_VIS=en[0].isIntersecting;renderCart()},{threshold:.05}).observe($("#pedido"));
+buildKitCard();buildClothes();buildPack();renderCart();goStep(1,false);
 /* menú activo */
 const links=$$("nav a"),secs=links.map(a=>$(a.getAttribute("href")));
 addEventListener("scroll",()=>{const y=scrollY+120;let k=0;secs.forEach((s,i)=>{if(s.offsetTop<=y)k=i});links.forEach((a,i)=>a.classList.toggle("on",i===k))},{passive:true});
