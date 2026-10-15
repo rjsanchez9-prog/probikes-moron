@@ -187,7 +187,6 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
   <img class="herologo" data-logo alt="ProBikes Morón">
   <div class="tag">
     <span class="chip">Equipación oficial 2027</span>
-    <span class="chip" id="acosur">¿Vienes de GACOSUR? Esta campaña es para ti</span>
   </div>
   <h1>Viste los colores<br>de <span>ProBikes Morón</span></h1>
   <p>Maillot y culote con el diseño del club a precio especial, un pack de material con hasta un 35 % de descuento y cuota de socio de solo 20 € al año.</p>
@@ -287,7 +286,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
   <h2>¿Tienes dudas?</h2>
   <div class="faq" style="margin-top:18px">
     <details><summary>¿Cuál es el mínimo de ropa que tengo que comprar?</summary>
-      <p>Como mínimo, una equipación completa: un maillot y un culote. A partir de ahí puedes comprar tantas prendas como quieras.</p></details>
+      <p>Como mínimo, una equipación completa corta: el maillot de manga corta y un culote. El maillot de manga larga y el chaleco no cuentan para el mínimo, pero puedes añadirlos. A partir de ahí puedes comprar tantas prendas como quieras.</p></details>
     <details><summary>¿Tengo que comprar el pack obligatoriamente?</summary>
       <p>No. Puedes comprar el pack completo (casco, zapatillas, guantes, gafas y calcetines) si quieres aprovechar el 35 % de descuento, comprar artículos sueltos con un 25 % de descuento, o no comprar nada de material.</p></details>
     <details><summary>¿Es obligatorio hacerme socio del club?</summary>
@@ -341,7 +340,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 
 </main>
 
-<footer class="wrap"><img class="footlogo" data-logo alt="ProBikes Morón"><br>Club Deportivo ProBikes Morón · Campaña hasta el 31 de octubre · Pedido mínimo: una equipación completa (maillot + culote)</footer>
+<footer class="wrap"><img class="footlogo" data-logo alt="ProBikes Morón"><br>Club Deportivo ProBikes Morón · Campaña hasta el 31 de octubre · Pedido mínimo: equipación completa corta (maillot manga corta + culote)</footer>
 
 <div class="sticky" id="sticky"><div class="t">Tu pedido<b id="stotal">0,00 €</b></div><a class="btn" href="#pedido">Ver pedido</a></div>
 <div class="toast" id="toast" role="status"></div>
@@ -361,11 +360,10 @@ const CFG = {
 };
 /* Equipación: pvp = precio de venta al público, price = precio especial de campaña. design = visor 3D disponible */
 const CLOTHES = [
-  {id:"maillot-cx",  name:"Maillot CX Pro manga corta", price:49.90, pvp:85,  design:"maillot"},
-  {id:"culote-abs",  name:"Culote Absolute",            price:82,    pvp:125, design:"culote"},
-  {id:"maillot-ml",  name:"Maillot manga larga",        price:65,    pvp:100, design:null},
-  {id:"chaleco",     name:"Chaleco cortavientos",       price:53,    pvp:80,  design:null},
-  {id:"culote-sol",  name:"Culote Absolute Solid",      price:87,    pvp:130, design:"culote"}
+  {id:"maillot-cx",  name:"Maillot CX Pro manga corta",      price:51, pvp:85,  design:"maillot"},
+  {id:"culote-sol",  name:"Culote Absolute Solid",           price:88, pvp:130, design:"culote"},
+  {id:"maillot-ml",  name:"Maillot manga larga Escalader",   price:70, pvp:115, design:null},
+  {id:"chaleco",     name:"Chaleco Plus 2.0",                price:54, pvp:80,  design:null}
 ];
 const SIZES = ["XS","S","M","L","XL","2XL","3XL"];
 /* Pack: pvp = null hasta tener el PVP real (se muestra «PVP próximamente»). */
@@ -397,7 +395,7 @@ function tick(){
   if(left<=0){c.innerHTML="";$("#deadline").textContent="La campaña ha finalizado.";return}
   const d=Math.floor(left/864e5),h=Math.floor(left/36e5)%24,m=Math.floor(left/6e4)%60,s=Math.floor(left/1e3)%60;
   c.innerHTML=[[d,"días"],[h,"horas"],[m,"min"],[s,"seg"]].map(x=>`<div><b>${String(x[0]).padStart(2,"0")}</b><small>${x[1]}</small></div>`).join("");
-  $("#deadline").textContent="La campaña termina el 31 de octubre. Pedido mínimo: una equipación completa (maillot + culote).";
+  $("#deadline").textContent="La campaña termina el 31 de octubre. Pedido mínimo: equipación completa corta (maillot manga corta + culote).";
 }
 tick();setInterval(tick,1000);
 
@@ -474,7 +472,7 @@ $$(".tabs button").forEach(b=>b.onclick=()=>pick(b.dataset.g));
 pick("maillot");
 
 /* ---------- Estado del pedido ---------- */
-let CART=store.get("probikes_cart",[]).map(l=>{if(l.kind!=="ropa")return l;const c=CLOTHES.find(x=>x.id===l.id);return c?{...l,pvp:c.pvp,price:c.price}:l}).filter(l=>l.kind!=="ropa"||l.price!=null);
+let CART=store.get("probikes_cart",[]).map(l=>{if(l.kind!=="ropa")return l;const c=CLOTHES.find(x=>x.id===l.id);return c?{...l,pvp:c.pvp,price:c.price}:null}).filter(l=>l&&(l.kind!=="ropa"||l.price!=null));
 const pct=(pvp,p)=>Math.round((1-p/pvp)*100);
 let PICK=store.get("probikes_pick",{items:{},zapas:"MTB RC",guantes:"Carretera"});
 const packIds=PACK.map(p=>p.id);
@@ -606,8 +604,8 @@ function renderCart(){
   $("#total").textContent=eur(sum);$("#stotal").textContent=eur(sum);
   $("#totalnote").textContent=pend?`${pend} artículo(s) del pack pendientes de PVP; se sumarán al confirmar.`:(CART.some(l=>l.kind==="pack")?`Descuento del pack aplicado: ${Math.round(d*100)} %${hasAllPack()?"":" (con casco, zapatillas, guantes, gafas y calcetines sería 35 %)"}.`:"");
   $("#sticky").classList.toggle("show",CART.length>0||$("#socio").checked);
-  const k=kit(),miss=[!k.maillot&&"un maillot",!k.culote&&"un culote"].filter(Boolean);
-  $("#kit").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Pedido mínimo cumplido: equipación completa.</span>`:`Pedido mínimo: una equipación completa. Te falta añadir ${miss.join(" y ")}. <a href="#precios" style="color:var(--pink)">Elegir prendas →</a>`;
+  const k=kit(),miss=[!k.maillot&&"el maillot de manga corta",!k.culote&&"un culote"].filter(Boolean);
+  $("#kit").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Pedido mínimo cumplido: equipación completa.</span>`:`Pedido mínimo: equipación completa corta. Te falta añadir ${miss.join(" y ")}. <a href="#precios" style="color:var(--pink)">Elegir prendas →</a>`;
   $("#gen").disabled=!kitOK();
 }
 $("#socio").checked=store.get("probikes_socio",false);
@@ -615,7 +613,7 @@ $("#socio").onchange=()=>{store.set("probikes_socio",$("#socio").checked);render
 ["nombre","tel","mail","dni","nac"].forEach(id=>{$("#"+id).value=store.get("probikes_"+id,"");$("#"+id).oninput=e=>{store.set("probikes_"+id,e.target.value)}});
 
 /* ---------- WhatsApp (solo dudas), QR y envío del pedido ---------- */
-const kit=()=>({maillot:CART.some(l=>l.kind==="ropa"&&l.id.startsWith("maillot")),culote:CART.some(l=>l.kind==="ropa"&&l.id.startsWith("culote"))});
+const kit=()=>({maillot:CART.some(l=>l.kind==="ropa"&&l.id==="maillot-cx"),culote:CART.some(l=>l.kind==="ropa"&&l.id.startsWith("culote"))});
 const kitOK=()=>{const k=kit();return k.maillot&&k.culote};
 const waDudas=`https://wa.me/${CFG.whatsapp}?text=`+encodeURIComponent(`Hola, tengo una duda sobre la campaña de ${CFG.club}.`);
 $("#wadudas").href=waDudas;
@@ -646,7 +644,7 @@ function csvFallback(o){
 }
 const bad=(el,msg)=>{toast(msg);el.focus();return false};
 function validate(){
-  if(!kitOK())return bad($("#gen"),"Añade al menos un maillot y un culote");
+  if(!kitOK())return bad($("#gen"),"Añade el maillot de manga corta y un culote");
   if(!$("#nombre").value.trim().includes(" ")&&$("#nombre").value.trim().length<4)return bad($("#nombre"),"Indica tu nombre y apellidos");
   if(!/^[0-9XYZ][0-9]{7}[A-Z]$/i.test($("#dni").value.trim()))return bad($("#dni"),"Revisa el DNI/NIE (8 números y letra)");
   const n=$("#nac").value;if(!n||n>new Date().toISOString().slice(0,10)||n<"1900-01-01")return bad($("#nac"),"Indica tu fecha de nacimiento");
