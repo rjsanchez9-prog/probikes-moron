@@ -842,10 +842,10 @@ $("#again").onclick=()=>{SOCIO_ELEGIDO=false;$("#done").hidden=true;$("#wiz").hi
 /* ---------- Cabecera: maillot y culote girando + precio de la equipación completa ---------- */
 (function hero(){
   const a=$("#hk1"),b=$("#hk2"),F1=FRAMES.maillot,F2=FRAMES.culote;let i=0,vis=true;
-  const L=Math.max(F1.length,F2.length),set=()=>{a.src=F1[Math.floor(i*F1.length/L)];b.src=F2[Math.floor(i*F2.length/L)]};set();
+  const L=24,set=()=>{const th=i/L*360;a.src=F1[Math.round(th/30)%F1.length];b.src=F2[Math.round(th/22.5)%F2.length]};set();
   if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
   if("IntersectionObserver"in window)new IntersectionObserver(en=>{vis=en[0].isIntersecting}).observe($(".herokit"));
-  setInterval(()=>{if(document.hidden||!vis)return;i=(i+1)%L;set()},200);
+  setInterval(()=>{if(document.hidden||!vis)return;i=(i+1)%L;set()},100);
 })();
 (function kitPrice(){
   const m=CLOTHES.find(c=>c.id==="maillot-cx"),c=CLOTHES.find(c=>c.id==="culote-sol");
