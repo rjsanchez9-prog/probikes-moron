@@ -387,7 +387,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <li><span class="ic">💬</span><div><b>Grupo de WhatsApp</b><span>Se organizan las salidas y se avisa de cuándo se hacen.</span></div></li>
     <li><span class="ic">🌙</span><div><b>Nocturnas ProBikes</b><span>Todas las nocturnas, cada dos jueves durante el verano, con refrigerio gratuito para los asistentes.</span></div></li>
     <li><span class="ic">⭐</span><div><b>Acceso VIP a las rebajas</b><span>Entras a las ofertas especiales de la tienda antes de que se publiquen.</span></div></li>
-    <li><span class="ic">🚴</span><div><b>Entrena con José María Sánchez a mitad de precio</b><span>Plan personalizado con seguimiento: 50 €/mes en vez de 75 € (precio base 99 €).</span></div></li>
+    <li><span class="ic">🚴</span><div><b>Entrena con José María Sánchez a precio de socio</b><span>Plan personalizado con seguimiento: 60 €/mes en vez de 75 € (precio base 99 €).</span></div></li>
   </ul>
         
         <input type="checkbox" id="socio" hidden>
@@ -504,7 +504,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <li><span class="ic">💬</span><div><b>Grupo de WhatsApp</b><span>Se organizan las salidas y se avisa de cuándo se hacen.</span></div></li>
     <li><span class="ic">🌙</span><div><b>Nocturnas ProBikes</b><span>Todas las nocturnas, cada dos jueves durante el verano, con refrigerio gratuito para los asistentes.</span></div></li>
     <li><span class="ic">⭐</span><div><b>Acceso VIP a las rebajas</b><span>Entras a las ofertas especiales de la tienda antes de que se publiquen.</span></div></li>
-    <li><span class="ic">🚴</span><div><b>Entrena con José María Sánchez a mitad de precio</b><span>Plan personalizado con seguimiento: 50 €/mes en vez de 75 € (precio base 99 €).</span></div></li>
+    <li><span class="ic">🚴</span><div><b>Entrena con José María Sánchez a precio de socio</b><span>Plan personalizado con seguimiento: 60 €/mes en vez de 75 € (precio base 99 €).</span></div></li>
   </ul>
 </section>
 
@@ -517,9 +517,9 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <details><summary>¿Tengo que comprar el pack obligatoriamente?</summary>
       <p>No. Puedes comprar el pack completo (casco, zapatillas, guantes, gafas y calcetines) si quieres aprovechar el 35 % de descuento, comprar artículos sueltos con un 25 % de descuento, o no comprar nada de material.</p></details>
     <details><summary>¿Es obligatorio hacerme socio del club?</summary>
-      <p>No es obligatorio. Pero por solo 20 € al año, sin matrícula ni permanencia, tienes ventajas durante todo el año: descuentos especiales en carreras Scott, comida anual, grupo de WhatsApp, nocturnas con refrigerio, acceso VIP a las rebajas y el plan de entrenamiento de José María Sánchez a 50 €/mes.</p></details>
+      <p>No es obligatorio. Pero por solo 20 € al año, sin matrícula ni permanencia, tienes ventajas durante todo el año: descuentos especiales en carreras Scott, comida anual, grupo de WhatsApp, nocturnas con refrigerio, acceso VIP a las rebajas y el plan de entrenamiento de José María Sánchez a 60 €/mes.</p></details>
     <details><summary>¿Qué es el plan de entrenamiento con José María Sánchez?</summary>
-      <p>Un plan mensual personalizado en TrainingPeaks con seguimiento automatizado, resumen semanal y consejos de nutrición. Precio base 99 €/mes: 75 € (−25 %) o 50 € (−50 %) si eres socio del club. Es opcional: lo eliges en el paso 5 del pedido, no se suma al carrito y recibirás un cuestionario por correo para prepararlo.</p></details>
+      <p>Un plan mensual personalizado en TrainingPeaks con seguimiento automatizado, resumen semanal y consejos de nutrición. Precio base 99 €/mes: 75 € (−25 %) o 60 € (−39 %) si eres socio del club. Es opcional: lo eliges en el paso 5 del pedido, no se suma al carrito y recibirás un cuestionario por correo para prepararlo.</p></details>
     <details><summary>¿Puedo federarme?</summary>
       <p>Sí. El club está dado de alta en la Federación Andaluza, así que puedes federarte con el Club Deportivo ProBikes Morón. El pago de la licencia federativa corre a cargo del corredor.</p></details>
   </div>
@@ -948,13 +948,13 @@ $$(".sopt").forEach(b=>b.onclick=()=>{SOCIO_ELEGIDO=true;$("#socio").checked=b.d
 $("#snext").onclick=()=>{if(STEP===1&&!kitOK()){toast("Añade primero el maillot de manga corta y un culote");return}goStep(STEP+1)};
 
 /* ---------- v3: paso 5 · entrenar con José María Sánchez ---------- */
-const COACH_PRECIO=socio=>socio?50:75;
+const COACH_PRECIO=socio=>socio?60:75;
 let COACH=store.get("pbk3_coach","");
 $("#jmlogo").src=JMLOGO;
 function coachUI(){
   const s=$("#socio").checked,p=COACH_PRECIO(s);
-  $("#cprice").textContent=p+" €";$("#cdto").textContent=s?"−50 % por ser socio":"−25 %";
-  $("#cnote").innerHTML=s?"Precio de socio del Club Deportivo ProBikes Morón.":`Los socios del club pagan <b>50 €/mes (−50 %)</b>. <a href="#" data-gostep="3" style="color:var(--pink);font-weight:800">Hazte socio</a>`;
+  $("#cprice").textContent=p+" €";$("#cdto").textContent=s?"−39 % por ser socio":"−25 %";
+  $("#cnote").innerHTML=s?"Precio de socio del Club Deportivo ProBikes Morón.":`Los socios del club pagan <b>60 €/mes (−39 %)</b>. <a href="#" data-gostep="3" style="color:var(--pink);font-weight:800">Hazte socio</a>`;
   $("#coachYes").classList.toggle("on",COACH==="SI");$("#coachNo").classList.toggle("on",COACH==="NO");
   $("#coachYes").setAttribute("aria-pressed",COACH==="SI");$("#coachNo").setAttribute("aria-pressed",COACH==="NO");
   $("#crgpdBox").style.display=COACH==="SI"?"flex":"none";
