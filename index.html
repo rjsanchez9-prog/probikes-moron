@@ -291,7 +291,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
   <h2>¿Tienes dudas?</h2>
   <div class="faq" style="margin-top:18px">
     <details><summary>¿Cuál es el mínimo de ropa que tengo que comprar?</summary>
-      <p>Como mínimo, una equipación completa corta: el maillot de manga corta y un culote. El maillot de manga larga, el chaleco y el mono integral no cuentan para el mínimo, pero puedes añadirlos. A partir de ahí puedes comprar tantas prendas como quieras.</p></details>
+      <p>Como mínimo, una de estas dos opciones: el maillot de manga corta + un culote, o el mono integral Brookling. El maillot de manga larga y el chaleco no cuentan para el mínimo, pero puedes añadirlos. A partir de ahí puedes comprar tantas prendas como quieras.</p></details>
     <details><summary>¿Tengo que comprar el pack obligatoriamente?</summary>
       <p>No. Puedes comprar el pack completo (casco, zapatillas, guantes, gafas y calcetines) si quieres aprovechar el 35 % de descuento, comprar artículos sueltos con un 25 % de descuento, o no comprar nada de material.</p></details>
     <details><summary>¿Es obligatorio hacerme socio del club?</summary>
@@ -347,7 +347,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 
 </main>
 
-<footer class="wrap"><img class="footlogo" data-logo alt="ProBikes Morón"><br>Club Deportivo ProBikes Morón · Campaña hasta el 31 de octubre · Pedido mínimo: equipación completa corta (maillot manga corta + culote)</footer>
+<footer class="wrap"><img class="footlogo" data-logo alt="ProBikes Morón"><br>Club Deportivo ProBikes Morón · Campaña hasta el 31 de octubre · Pedido mínimo: maillot manga corta + culote, o mono integral Brookling</footer>
 
 <div class="sticky" id="sticky"><div class="t">Tu pedido<b id="stotal">0,00 €</b></div><a class="btn" href="#pedido">Ver pedido</a></div>
 <div class="toast" id="toast" role="status"></div>
@@ -403,7 +403,7 @@ function tick(){
   if(left<=0){c.innerHTML="";$("#deadline").textContent="La campaña ha finalizado.";return}
   const d=Math.floor(left/864e5),h=Math.floor(left/36e5)%24,m=Math.floor(left/6e4)%60,s=Math.floor(left/1e3)%60;
   c.innerHTML=[[d,"días"],[h,"horas"],[m,"min"],[s,"seg"]].map(x=>`<div><b>${String(x[0]).padStart(2,"0")}</b><small>${x[1]}</small></div>`).join("");
-  $("#deadline").textContent="La campaña termina el 31 de octubre. Pedido mínimo: equipación completa corta (maillot manga corta + culote).";
+  $("#deadline").textContent="La campaña termina el 31 de octubre. Pedido mínimo: maillot manga corta + culote, o mono integral Brookling.";
 }
 tick();setInterval(tick,1000);
 
@@ -613,8 +613,8 @@ function renderCart(){
   $("#total").textContent=eur(sum);$("#stotal").textContent=eur(sum);
   $("#totalnote").textContent=pend?`${pend} artículo(s) del pack pendientes de PVP; se sumarán al confirmar.`:(CART.some(l=>l.kind==="pack")?`Descuento del pack aplicado: ${Math.round(d*100)} %${hasAllPack()?"":" (con casco, zapatillas, guantes, gafas y calcetines sería 35 %)"}.`:"");
   $("#sticky").classList.toggle("show",CART.length>0||$("#socio").checked);
-  const k=kit(),miss=[!k.maillot&&"el maillot de manga corta",!k.culote&&"un culote"].filter(Boolean);
-  $("#kit").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Pedido mínimo cumplido: equipación completa.</span>`:`Pedido mínimo: equipación completa corta. Te falta añadir ${miss.join(" y ")}. <a href="#precios" style="color:var(--pink)">Elegir prendas →</a>`;
+  const miss=[kitFalta()].filter(Boolean);
+  $("#kit").innerHTML=kitOK()?`<span style="color:var(--ok)">✓ Pedido mínimo cumplido.</span>`:`Pedido mínimo: maillot corto + culote, o el mono integral. Te falta añadir ${miss.join(" y ")}. <a href="#precios" style="color:var(--pink)">Elegir prendas →</a>`;
   $("#gen").disabled=!kitOK();
 }
 $("#socio").checked=store.get("probikes_socio",false);
@@ -622,8 +622,9 @@ $("#socio").onchange=()=>{store.set("probikes_socio",$("#socio").checked);render
 ["nombre","tel","mail","dni","nac"].forEach(id=>{$("#"+id).value=store.get("probikes_"+id,"");$("#"+id).oninput=e=>{store.set("probikes_"+id,e.target.value)}});
 
 /* ---------- WhatsApp (solo dudas), QR y envío del pedido ---------- */
-const kit=()=>({maillot:CART.some(l=>l.kind==="ropa"&&l.id==="maillot-cx"),culote:CART.some(l=>l.kind==="ropa"&&l.id.startsWith("culote"))});
-const kitOK=()=>{const k=kit();return k.maillot&&k.culote};
+const kit=()=>({maillot:CART.some(l=>l.kind==="ropa"&&l.id==="maillot-cx"),culote:CART.some(l=>l.kind==="ropa"&&l.id.startsWith("culote")),mono:CART.some(l=>l.kind==="ropa"&&l.id==="mono")});
+const kitOK=()=>{const k=kit();return k.mono||(k.maillot&&k.culote)};
+const kitFalta=()=>{const k=kit();if(k.mono||(k.maillot&&k.culote))return"";if(k.maillot)return"un culote (o el mono integral)";if(k.culote)return"el maillot de manga corta (o el mono integral)";return"el maillot de manga corta y un culote, o el mono integral"};
 const waDudas=`https://wa.me/${CFG.whatsapp}?text=`+encodeURIComponent(`Hola, tengo una duda sobre la campaña de ${CFG.club}.`);
 $("#wadudas").href=waDudas;
 (function qr(){
@@ -653,7 +654,7 @@ function csvFallback(o){
 }
 const bad=(el,msg)=>{toast(msg);el.focus();return false};
 function validate(){
-  if(!kitOK())return bad($("#gen"),"Añade el maillot de manga corta y un culote");
+  if(!kitOK())return bad($("#gen"),"Añade el maillot de manga corta y un culote, o el mono integral");
   if(!$("#nombre").value.trim().includes(" ")&&$("#nombre").value.trim().length<4)return bad($("#nombre"),"Indica tu nombre y apellidos");
   if(!/^[0-9XYZ][0-9]{7}[A-Z]$/i.test($("#dni").value.trim()))return bad($("#dni"),"Revisa el DNI/NIE (8 números y letra)");
   const n=$("#nac").value;if(!n||n>new Date().toISOString().slice(0,10)||n<"1900-01-01")return bad($("#nac"),"Indica tu fecha de nacimiento");
