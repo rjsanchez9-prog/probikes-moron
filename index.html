@@ -172,6 +172,9 @@ label.f{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:1
 .sticky .t b{display:block;font-size:20px;color:#fff}
 footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+.paybanner{display:flex;gap:12px;align-items:center;background:#1c8a5a22;border:1.5px solid var(--ok);border-radius:16px;padding:12px 14px;margin:14px 0;font-size:14.5px;line-height:1.35;color:#fff}
+.paybanner .pi{flex:none;font-size:26px;line-height:1}.paybanner b{display:block;font-size:15.5px}.paybanner span{color:#d8dbff}
+.payline{font-size:13px;font-weight:700;color:var(--ok);margin:10px 0 0;text-align:center}
 </style>
 </head>
 <body>
@@ -309,6 +312,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
   <span class="kicker">Tu pedido</span>
   <h2>Reserva tus prendas</h2>
   <p class="sub">Revisa el pedido, rellena tus datos y envíalo. Queda registrado con fecha y hora.</p>
+  <div class="paybanner" role="note"><span class="pi">💶</span><div><b>El pago se realizará a la entrega del producto</b><span>No pagas nada ahora: solo envías tu pedido.</span></div></div>
   <div class="grid c2" style="align-items:start">
     <div class="card">
       <h3>Resumen</h3>
@@ -334,6 +338,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
       <div style="display:grid;gap:10px;margin-top:18px">
         <button class="btn" id="gen">Enviar mi pedido</button>
       </div>
+      <p class="payline">💶 Pago a la entrega del producto: ahora no pagas nada.</p>
       <p class="note" id="genmsg"></p>
     </div>
   </div>

@@ -259,6 +259,9 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
 .dsc .big2{font-weight:900;font-size:34px;line-height:1;color:var(--pink)}.dsc .big2 small{font-size:.45em;color:#fff}
 .dsc.act{border-color:var(--pink);background:#e5287a26}
 @media(max-width:380px){.dscs{grid-template-columns:1fr}}
+.paybanner{display:flex;gap:12px;align-items:center;background:#1c8a5a22;border:1.5px solid var(--ok);border-radius:16px;padding:12px 14px;margin:14px 0;font-size:14.5px;line-height:1.35;color:#fff}
+.paybanner .pi{flex:none;font-size:26px;line-height:1}.paybanner b{display:block;font-size:15.5px}.paybanner span{color:#d8dbff}
+.payline{font-size:13px;font-weight:700;color:var(--ok);margin:10px 0 0;text-align:center}
 
 /* ---- v3: paso 5 entrenamiento ---- */
 .coach{background:linear-gradient(135deg,#161a52,#0d1038 75%);border:1.5px solid var(--pink)}
@@ -306,6 +309,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
     <a class="btn" href="#pedido" data-gostep="1">Empezar mi pedido →</a>
     <a class="btn ghost" href="#diseno">Ver en 3D</a>
   </div>
+  <p class="payline" style="text-align:left;margin:12px 0 0">💶 Pago a la entrega del producto</p>
   <ol class="how" aria-label="Cómo funciona">
     <li><span class="n">1</span><div><b>Elige tu equipación</b>Maillot + culote, tu talla</div></li>
     <li><span class="n">2</span><div><b>Añade material</b>Hasta −35 % en casco, zapatillas…</div></li>
@@ -322,6 +326,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
   <span class="kicker">Haz tu pedido</span>
   <h2>Tu pedido en 5 pasos</h2>
   <div id="wiz">
+    <div class="paybanner" role="note"><span class="pi">💶</span><div><b>El pago se realizará a la entrega del producto</b><span>No pagas nada ahora: solo envías tu pedido.</span></div></div>
     <div class="stepsbar">
       <ol class="steps" id="steps">
         <li><button data-go="1"><span class="n">1</span>Equipación</button></li>
@@ -445,6 +450,7 @@ footer{padding:40px 0 110px;color:var(--muted);font-size:13px;text-align:center}
         <label class="check" id="crgpdBox" style="display:none;margin-top:14px"><input type="checkbox" id="crgpd"><span style="font-size:13px;color:var(--muted)">Acepto que ProBikes Morón me envíe por correo el cuestionario del plan de entrenamiento de JM Sánchez Coach y trate esas respuestas para preparar mi plan. El cobro de la cuota se acuerda después: ahora no se paga nada.</span></label>
       </div>
       <div style="display:grid;gap:10px;margin-top:18px"><button class="btn" id="gen">Enviar mi pedido</button></div>
+      <p class="payline">💶 Pago a la entrega del producto: ahora no pagas nada.</p>
       <p class="note" id="genmsg"></p>
       <div class="stepnav"><button class="btn ghost" data-prev>← Volver</button></div>
     </div>
@@ -894,7 +900,7 @@ function showDone(o,j){
   $("#doneMsg").innerHTML=`Gracias, <b>${esc(c.nombre.split(" ")[0])}</b>. Hemos registrado tu pedido <b>${esc(o.pedido)}</b>${j.fecha?` el ${esc(j.fecha)} a las ${esc(j.hora)}`:""}.`;
   $("#doneList").innerHTML=o.lineas.map(l=>`<li><div><b>${esc(l.articulo)}${l.variante?" "+esc(l.variante):""}</b><small>${l.talla?"Talla "+esc(l.talla)+" · ":""}×${esc(l.cantidad)}</small></div><b>${imp(l.importe)}</b></li>`).join("");
   $("#doneTotal").textContent=eur(c.total);
-  $("#doneNote").innerHTML=(j.correo?`Te hemos enviado la confirmación a <b>${esc(c.mail)}</b>. `:`Revisa tu correo (${esc(c.mail)}); si no te llega, avísanos. `)+"El pago y la entrega se realizan en la tienda; nos pondremos en contacto contigo para confirmar tu pedido."+(c.entrenar==="SI"?(j.entreno===true?`<br><br><b>Plan de entrenamiento con José María Sánchez:</b> te hemos enviado a <b>${esc(c.mail)}</b> el cuestionario (cuota ${c.cuota_entreno} €/mes). Rellénalo y prepararemos tu plan; el cobro se acuerda después.`:`<br><br><b>Plan de entrenamiento con José María Sánchez:</b> hemos anotado tu solicitud, pero el cuestionario no ha salido automáticamente${j.entreno_error?" ("+esc(j.entreno_error)+")":""}. Te lo enviaremos a <b>${esc(c.mail)}</b> lo antes posible.`):"");
+  $("#doneNote").innerHTML=(j.correo?`Te hemos enviado la confirmación a <b>${esc(c.mail)}</b>. `:`Revisa tu correo (${esc(c.mail)}); si no te llega, avísanos. `)+"El pago se realizará a la entrega del producto; nos pondremos en contacto contigo para confirmar tu pedido."+(c.entrenar==="SI"?(j.entreno===true?`<br><br><b>Plan de entrenamiento con José María Sánchez:</b> te hemos enviado a <b>${esc(c.mail)}</b> el cuestionario (cuota ${c.cuota_entreno} €/mes). Rellénalo y prepararemos tu plan; el cobro se acuerda después.`:`<br><br><b>Plan de entrenamiento con José María Sánchez:</b> hemos anotado tu solicitud, pero el cuestionario no ha salido automáticamente${j.entreno_error?" ("+esc(j.entreno_error)+")":""}. Te lo enviaremos a <b>${esc(c.mail)}</b> lo antes posible.`):"");
   CART=[];PICK.items={};PICK.qty={};PICK.sz={};$("#socio").checked=false;store.set("pbk2_socio",false);COACH="";store.set("pbk3_coach","");coachUI();save();
   $("#wiz").hidden=true;$("#done").hidden=false;$("#sticky").classList.remove("show");
   $("#done").scrollIntoView({behavior:"smooth",block:"start"});
